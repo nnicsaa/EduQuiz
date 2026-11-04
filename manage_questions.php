@@ -33,12 +33,21 @@ if (isset($_POST['delete_question'])) {
     }
 }
 
+/// Update Time Limit Logic
+if (isset($_POST['update_time'])) {
+    $new_time = $_POST['time_limit'];
+    $time_stmt = $conn->prepare("UPDATE quiz_categories SET time_limit = ? WHERE id = ?");
+    $time_stmt->bind_param("ii", $new_time, $category_id);
+    if ($time_stmt->execute()) {
+        $message = "<div class='alert success'>Time limit updated to $new_time minutes!</div>";
+    }
+}
+
 // Fetch Quiz Info
-$cat_stmt = $conn->prepare("SELECT title FROM quiz_categories WHERE id = ?");
+$cat_stmt = $conn->prepare("SELECT title, time_limit FROM quiz_categories WHERE id = ?");
 $cat_stmt->bind_param("i", $category_id);
 $cat_stmt->execute();
 $quiz_info = $cat_stmt->get_result()->fetch_assoc();
-
 if (!$quiz_info) { die("Quiz not found."); }
 
 // Fetch Questions
@@ -75,6 +84,20 @@ include "header.php";
     </div>
 
     <?php if($message) echo $message; ?>
+
+    <!-- Quiz Settings Card -->
+    <div class="q-card" style="display: flex; justify-content: space-between; align-items: center; border-left: 5px solid var(--secondary);">
+        <div>
+            <span style="font-size: 0.9rem; color: #888; font-weight: 800; text-transform: uppercase;">Quiz Settings</span>
+            <div style="font-size: 1.1rem; font-weight: 600; margin-top: 5px;">Time Limit: <strong style="color: var(--accent);"><?php echo $quiz_info['time_limit']; ?> Minutes</strong></div>
+        </div>
+        
+        <form method="POST" style="margin: 0; display: flex; gap: 10px; align-items: center;">
+            <input type="number" name="time_limit" value="<?php echo $quiz_info['time_limit']; ?>" min="1" required style="padding: 10px; border-radius: 8px; border: 1px solid #ccc; width: 80px; font-family: inherit;">
+            <button type="submit" name="update_time" style="background: var(--secondary); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 800; cursor: pointer;">Update</button>
+        </form>
+    </div>
+    <hr style="border: 0; border-top: 2px solid #eee; margin: 2rem 0;">
 
     <?php if ($questions->num_rows > 0): ?>
         <?php $num = 1; while($q = $questions->fetch_assoc()): ?>

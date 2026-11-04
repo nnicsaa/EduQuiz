@@ -251,5 +251,4 @@ $questionsResult = $questionsQuery->get_result();
         }
     }
 </script>
-    }
-</script>
+ 
