@@ -65,12 +65,10 @@ $historyQuery->execute();
 $historyResult = $historyQuery->get_result();
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>EDUQuiz! | Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+<?php 
+$page_title = "EDUQuiz! | Dashboard";
+include "header.php"; 
+?>
     <style>
 
         /* Modern History Table & Cards */
@@ -335,5 +333,4 @@ $historyResult = $historyQuery->get_result();
         evt.currentTarget.classList.add('active');
     }
 </script>
-</body>
-</html>
+<?php include "footer.php"; ?>

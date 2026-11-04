@@ -50,9 +50,11 @@ $q_stmt->execute();
 $questions = $q_stmt->get_result();
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<?php 
+$page_title = "Manage Questions | EDUQuiz";
+include "header.php"; 
+?>
+
     <meta charset="UTF-8">
     <title>Manage Questions | EDUQuiz</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
@@ -112,5 +114,4 @@ $questions = $q_stmt->get_result();
     <?php endif; ?>
 </div>
 
-</body>
-</html>
+<?php include "footer.php"; ?>

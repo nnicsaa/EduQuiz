@@ -219,12 +219,11 @@ if ($selected_student) {
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Admin Dashboard | EDUQuiz</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+<?php 
+$page_title = "Admin Dashboard | EDUQuiz";
+include "header.php"; 
+?>
+
     <style>
         :root { --accent: #ff6b6b; --secondary: #7048e8; --text-dark: #2d3436; --bg-light: #f8f9fa; }
         body { margin: 0; font-family: 'Outfit', sans-serif; background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab); background-size: 400% 400%; animation: gradient 15s ease infinite; display: flex; min-height: 100vh; }
@@ -525,5 +524,4 @@ window.onload = function() {
     <?php else: ?> switchTab('students', document.getElementById('btn-students'));
     <?php endif; ?>
 </script>
-</body>
-</html>
+<?php include "footer.php"; ?>
