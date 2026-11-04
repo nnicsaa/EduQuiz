@@ -417,6 +417,10 @@ if ($selected_student) {
                             </span>
                         </div>
                         <div style="display: flex; gap: 10px;">
+
+                        <a href="manage_questions.php?category_id=<?php echo $cat['id']; ?>" class="btn-view" style="background: var(--secondary); color: white; text-decoration: none; display: flex; align-items: center;">
+        📝 Manage
+    </a>
     <!-- Toggle Status Button -->
     <form method="POST" style="margin:0;">
         <input type="hidden" name="active_tab" value="quizzes">
