@@ -59,6 +59,23 @@ if (isset($_POST['approve_account'])) {
     if ($approve_stmt->execute()) { $message = "<div class='alert success'>Account approved!</div>"; }
 }
 
+if (isset($_POST['approve_account'])) {
+    $target_id = $_POST['user_id'];
+    $approve_stmt = $conn->prepare("UPDATE login SET status = 'Active', failed_attempts = 0 WHERE id = ?");
+    $approve_stmt->bind_param("i", $target_id);
+    if ($approve_stmt->execute()) { $message = "<div class='alert success'>Account approved!</div>"; }
+}
+
+// NEW: Reject and Delete Pending Account
+if (isset($_POST['reject_account'])) {
+    $target_id = $_POST['user_id'];
+    $reject_stmt = $conn->prepare("DELETE FROM login WHERE id = ?");
+    $reject_stmt->bind_param("i", $target_id);
+    if ($reject_stmt->execute()) { 
+        $message = "<div class='alert success'>Pending account rejected and removed!</div>"; 
+    }
+}
+
 if (isset($_POST['reactivate'])) {
     $target_id = $_POST['user_id'];
     $react_stmt = $conn->prepare("UPDATE login SET status = 'Active', failed_attempts = 0 WHERE id = ?");
@@ -104,6 +121,33 @@ if (isset($_POST['toggle_quiz_status'])) {
     $stmt = $conn->prepare("UPDATE quiz_categories SET status = ? WHERE id = ?");
     $stmt->bind_param("si", $new_status, $cat_id);
     $stmt->execute();
+    $current_tab = "quizzes"; 
+}
+
+if (isset($_POST['delete_quiz'])) {
+    $cat_id = $_POST['category_id'];
+    
+    // 1. Delete all user answers tied to scores of this quiz
+    $stmt1 = $conn->prepare("DELETE ua FROM user_answers ua INNER JOIN quiz_scores qs ON ua.score_id = qs.id WHERE qs.category_id = ?");
+    $stmt1->bind_param("i", $cat_id);
+    $stmt1->execute();
+
+    // 2. Delete all student scores for this quiz
+    $stmt2 = $conn->prepare("DELETE FROM quiz_scores WHERE category_id = ?");
+    $stmt2->bind_param("i", $cat_id);
+    $stmt2->execute();
+
+    // 3. Delete all questions in this quiz
+    $stmt3 = $conn->prepare("DELETE FROM questions WHERE category_id = ?");
+    $stmt3->bind_param("i", $cat_id);
+    $stmt3->execute();
+
+    // 4. Finally, delete the quiz category itself
+    $stmt4 = $conn->prepare("DELETE FROM quiz_categories WHERE id = ?");
+    $stmt4->bind_param("i", $cat_id);
+    if ($stmt4->execute()) {
+        $message = "<div class='alert success'>Quiz and all related data deleted permanently!</div>";
+    }
     $current_tab = "quizzes"; 
 }
 
@@ -261,8 +305,18 @@ if ($selected_student) {
                                 <td><strong><?php echo $row['un']; ?></strong></td>
                                 <td><?php echo $row['sec']; ?></td>
                                 <td>
-                                    <form method="POST"><input type='hidden' name='user_id' value='<?php echo $row['id']; ?>'><button type='submit' name='approve_account' class='btn-submit' style="padding: 5px 10px;">Approve</button></form>
-                                </td>
+    <div style="display: flex; gap: 10px;">
+        <form method="POST" style="margin:0;">
+            <input type='hidden' name='user_id' value='<?php echo $row['id']; ?>'>
+            <button type='submit' name='approve_account' class='btn-submit' style="padding: 5px 10px; background: #2b8a3e;">Approve</button>
+        </form>
+        
+        <form method="POST" style="margin:0;" onsubmit="return confirm('Are you sure you want to reject and permanently delete this student account?');">
+            <input type='hidden' name='user_id' value='<?php echo $row['id']; ?>'>
+            <button type='submit' name='reject_account' class='btn-submit' style="padding: 5px 10px; background: #c92a2a;">Reject</button>
+        </form>
+    </div>
+</td>
                             </tr>
                         <?php endwhile; ?>
                     </tbody>
@@ -362,14 +416,26 @@ if ($selected_student) {
                                 <?php echo $cat['status']; ?>
                             </span>
                         </div>
-                        <form method="POST" style="margin:0;">
-                            <input type="hidden" name="active_tab" value="quizzes">
-                            <input type="hidden" name="category_id" value="<?php echo $cat['id']; ?>">
-                            <input type="hidden" name="current_status" value="<?php echo $cat['status']; ?>">
-                            <button type="submit" name="toggle_quiz_status" class="btn-view" style="background: <?php echo $cat['status'] == 'Open' ? '#ff6b6b' : '#20c997'; ?>; color: white; border: none; cursor: pointer;">
-                                <?php echo $cat['status'] == 'Open' ? '🔒 Close Quiz' : '🔓 Open Quiz'; ?>
-                            </button>
-                        </form>
+                        <div style="display: flex; gap: 10px;">
+    <!-- Toggle Status Button -->
+    <form method="POST" style="margin:0;">
+        <input type="hidden" name="active_tab" value="quizzes">
+        <input type="hidden" name="category_id" value="<?php echo $cat['id']; ?>">
+        <input type="hidden" name="current_status" value="<?php echo $cat['status']; ?>">
+        <button type="submit" name="toggle_quiz_status" class="btn-view" style="background: <?php echo $cat['status'] == 'Open' ? '#f59f00' : '#20c997'; ?>; color: white; border: none; cursor: pointer;">
+            <?php echo $cat['status'] == 'Open' ? '🔒 Close' : '🔓 Open'; ?>
+        </button>
+    </form>
+    
+    <!-- Delete Quiz Button -->
+    <form method="POST" style="margin:0;" onsubmit="return confirm('⚠️ Are you absolutely sure? This will permanently delete the quiz, all its questions, and all student scores.');">
+        <input type="hidden" name="active_tab" value="quizzes">
+        <input type="hidden" name="category_id" value="<?php echo $cat['id']; ?>">
+        <button type="submit" name="delete_quiz" class="btn-view" style="background: #c92a2a; color: white; border: none; cursor: pointer;">
+            🗑️ Delete
+        </button>
+    </form>
+</div>
                     </li>
                 <?php endwhile; ?>
             </ul>
