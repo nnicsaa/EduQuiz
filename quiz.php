@@ -169,7 +169,7 @@ $questionsResult = $questionsQuery->get_result();
             <h1><?php echo htmlspecialchars($quiz_title); ?></h1>
         </div>
 
-        <form id="quiz-form" method="POST">
+        <form id="quiz-form" method="POST" onsubmit="return confirm('Are you sure you want to submit your answers? You cannot change them once submitted.');">
             <?php 
             $qNumber = 1;
             while ($q = $questionsResult->fetch_assoc()): 

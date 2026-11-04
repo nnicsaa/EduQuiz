@@ -421,7 +421,8 @@ include "header.php";
         📝 Manage
     </a>
     <!-- Toggle Status Button -->
-    <form method="POST" style="margin:0;">
+    <!-- Toggle Status Button -->
+    <form method="POST" style="margin:0;" onsubmit="return confirm('Are you sure you want to change the status of this quiz?');">
         <input type="hidden" name="active_tab" value="quizzes">
         <input type="hidden" name="category_id" value="<?php echo $cat['id']; ?>">
         <input type="hidden" name="current_status" value="<?php echo $cat['status']; ?>">
