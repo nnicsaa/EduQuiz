@@ -245,5 +245,4 @@ if(isset($_POST['login'])){
     }
 </script>
 
-</body>
-</html>
+<?php include "footer.php"; ?>

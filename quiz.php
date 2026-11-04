@@ -165,11 +165,13 @@ $questionsResult = $questionsQuery->get_result();
             <a href="dashboard.php" class="btn-back">Return to Dashboard</a>
         </div>
     <?php else: ?>
-        <div class="header">
+        
+        <div class="header" style="position: relative;">
+            <button type="button" onclick="confirmLeave()" class="btn-back" style="position: absolute; top: -10px; left: 0; margin-top: 0; background: transparent; cursor: pointer;">← Leave Quiz</button>
             <h1><?php echo htmlspecialchars($quiz_title); ?></h1>
         </div>
 
-        <form id="quiz-form" method="POST" onsubmit="return confirm('Are you sure you want to submit your answers? You cannot change them once submitted.');">
+        <form id="quiz-form" method="POST">
             <?php 
             $qNumber = 1;
             while ($q = $questionsResult->fetch_assoc()): 
@@ -177,7 +179,7 @@ $questionsResult = $questionsQuery->get_result();
                 <div class="question-card">
                     <div class="question-text"><?php echo $qNumber++ . ". " . htmlspecialchars($q['question']); ?></div>
                     <ul class="options-list">
-                        <li><label><input type="radio" name="answers[<?php echo $q['id']; ?>]" value="a" required> <?php echo htmlspecialchars($q['option_a']); ?></label></li>
+                        <li><label><input type="radio" name="answers[<?php echo $q['id']; ?>]" value="a"> <?php echo htmlspecialchars($q['option_a']); ?></label></li>
                         <li><label><input type="radio" name="answers[<?php echo $q['id']; ?>]" value="b"> <?php echo htmlspecialchars($q['option_b']); ?></label></li>
                         <li><label><input type="radio" name="answers[<?php echo $q['id']; ?>]" value="c"> <?php echo htmlspecialchars($q['option_c']); ?></label></li>
                         <li><label><input type="radio" name="answers[<?php echo $q['id']; ?>]" value="d"> <?php echo htmlspecialchars($q['option_d']); ?></label></li>
@@ -195,18 +197,59 @@ $questionsResult = $questionsQuery->get_result();
     const timerDisplay = document.getElementById('time-string');
     const quizForm = document.getElementById('quiz-form');
 
-    if (quizForm && timerDisplay) {
-        const countdown = setInterval(() => {
-            let mins = Math.floor(timeLeft / 60);
-            let secs = timeLeft % 60;
-            timerDisplay.innerHTML = `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
-            if (timeLeft <= 0) {
-                clearInterval(countdown);
-                quizForm.submit();
+    if (quizForm) {
+        // Smart Submission Check
+        quizForm.onsubmit = function(e) {
+            const totalQuestions = document.querySelectorAll('.question-card').length;
+            const answeredQuestions = document.querySelectorAll('input[type="radio"]:checked').length;
+            const unanswered = totalQuestions - answeredQuestions;
+
+            if (unanswered > 0) {
+                return confirm(`⚠️ You have ${unanswered} unanswered question(s)! Are you sure you want to submit early?`);
+            } else {
+                return confirm('All questions answered! Ready to submit?');
             }
-            timeLeft--;
-        }, 1000);
+        };
+
+        // Timer Logic
+        if (timerDisplay) {
+            const countdown = setInterval(() => {
+                let mins = Math.floor(timeLeft / 60);
+                let secs = timeLeft % 60;
+                timerDisplay.innerHTML = `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(countdown);
+                    quizForm.onsubmit = null; // Disable confirmation popup so it forces submission
+                    quizForm.submit();
+                }
+                timeLeft--;
+            }, 1000);
+        }
+
+        // Timer Logic
+        if (timerDisplay) {
+            const countdown = setInterval(() => {
+                let mins = Math.floor(timeLeft / 60);
+                let secs = timeLeft % 60;
+                timerDisplay.innerHTML = `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(countdown);
+                    quizForm.onsubmit = null; 
+                    quizForm.submit();
+                }
+                timeLeft--;
+            }, 1000);
+        }
+    }
+
+    // Leave Quiz Confirmation
+    function confirmLeave() {
+        if (confirm("⚠️ Are you sure you want to leave this quiz? Your progress will not be saved and it will not count as an attempt.")) {
+            window.location.href = "dashboard.php";
+        }
     }
 </script>
-</body>
-</html>
+    }
+</script>
