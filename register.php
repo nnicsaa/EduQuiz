@@ -96,13 +96,10 @@ if(isset($_POST['login'])){
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EDUQuiz! | Join the Fun</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+<?php 
+$page_title = "EDUQuiz | Login";
+include "header.php"; 
+?>
     <style>
         :root { 
             --accent: #ff6b6b; 

@@ -1,0 +1,16 @@
+{
+  "name": "EDUQuiz Learning Portal",
+  "short_name": "EDUQuiz",
+  "description": "Interactive student quiz and assessment portal",
+  "start_url": "./register.php",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#7048e8",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3413/3413535.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

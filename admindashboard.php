@@ -8,6 +8,15 @@ if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
     exit();
 }
 
+// Count Pending Approvals for the Notification Badge
+$pending_query = $conn->query("SELECT COUNT(*) as pending_count FROM login WHERE status = 'Pending' AND role = 'student'");
+$pending_data = $pending_query->fetch_assoc();
+$pending_count = $pending_data['pending_count'];
+
+$page_title = "Admin Dashboard | EDUQuiz";
+include "header.php"; 
+?>
+
 $admin_username = $_SESSION['user'];
 $message = "";
 $current_tab = isset($_POST['active_tab']) && !empty($_POST['active_tab']) ? $_POST['active_tab'] : "students"; 
@@ -267,6 +276,18 @@ include "header.php";
         .success { background: #ebfbee; color: #2b8a3e; }
         .error { background: #fff5f5; color: #c92a2a; }
     </style>
+    <!-- Pending Approvals Alert Card -->
+<?php if ($pending_count > 0): ?>
+    <div style="background: #fff0f0; border-left: 5px solid #ff6b6b; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+        <div>
+            <h3 style="margin: 0; color: #c92a2a;">🚨 Action Required</h3>
+            <p style="margin: 5px 0 0 0; font-size: 0.95rem; color: #555;">There are students waiting for account approval.</p>
+        </div>
+        <span style="background: #ff6b6b; color: white; padding: 8px 15px; border-radius: 20px; font-weight: 800; font-size: 1rem;">
+            <?php echo $pending_count; ?> Pending
+        </span>
+    </div>
+<?php endif; ?>
 </head>
 <body>
 
