@@ -416,11 +416,11 @@ include "header.php";
                             </span>
                         </div>
                         <div style="display: flex; gap: 10px;">
-
-                        <a href="manage_questions.php?category_id=<?php echo $cat['id']; ?>" class="btn-view" style="background: var(--secondary); color: white; text-decoration: none; display: flex; align-items: center;">
+    <!-- Manage Questions Button -->
+    <a href="manage_questions.php?category_id=<?php echo $cat['id']; ?>" class="btn-view" style="background: var(--secondary); color: white; text-decoration: none; display: flex; align-items: center;">
         📝 Manage
     </a>
-    <!-- Toggle Status Button -->
+
     <!-- Toggle Status Button -->
     <form method="POST" style="margin:0;" onsubmit="return confirm('Are you sure you want to change the status of this quiz?');">
         <input type="hidden" name="active_tab" value="quizzes">

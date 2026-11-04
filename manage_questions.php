@@ -20,7 +20,7 @@ $message = "";
 if (isset($_POST['delete_question'])) {
     $question_id = $_POST['question_id'];
     
-    // Delete student answers tied to this specific question first to prevent foreign key errors
+    // Delete student answers tied to this specific question first
     $stmt1 = $conn->prepare("DELETE FROM user_answers WHERE question_id = ?");
     $stmt1->bind_param("i", $question_id);
     $stmt1->execute();
@@ -39,28 +39,20 @@ $cat_stmt->bind_param("i", $category_id);
 $cat_stmt->execute();
 $quiz_info = $cat_stmt->get_result()->fetch_assoc();
 
-if (!$quiz_info) {
-    die("Quiz not found.");
-}
+if (!$quiz_info) { die("Quiz not found."); }
 
 // Fetch Questions
 $q_stmt = $conn->prepare("SELECT * FROM questions WHERE category_id = ?");
 $q_stmt->bind_param("i", $category_id);
 $q_stmt->execute();
 $questions = $q_stmt->get_result();
-?>
 
-<?php 
 $page_title = "Manage Questions | EDUQuiz";
-include "header.php"; 
+include "header.php";
 ?>
-
-    <meta charset="UTF-8">
-    <title>Manage Questions | EDUQuiz</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { --accent: #ff6b6b; --secondary: #7048e8; --text-dark: #2d3436; }
-        body { font-family: 'Outfit', sans-serif; background: #f4f6f8; margin: 0; padding: 2rem; color: var(--text-dark); }
+        body { background: #f4f6f8; margin: 0; padding: 2rem; color: var(--text-dark); }
         .container { max-width: 1000px; margin: 0 auto; background: white; padding: 2rem; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
         .header-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 2px solid #eee; padding-bottom: 1rem; }
         .btn-back { background: #e5dbff; color: var(--secondary); padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 800; }
@@ -99,7 +91,7 @@ include "header.php";
                         <span class="correct-ans">Correct Answer: Option <?php echo strtoupper($q['correct_answer']); ?></span>
                     </div>
                     
-                    <form method="POST" onsubmit="return confirm('Delete this question permanently?');">
+                    <form method="POST" style="margin:0;" onsubmit="return confirm('Delete this question permanently?');">
                         <input type="hidden" name="question_id" value="<?php echo $q['id']; ?>">
                         <button type="submit" name="delete_question" class="btn-delete">🗑️ Delete</button>
                     </form>
