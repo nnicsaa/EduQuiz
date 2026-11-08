@@ -8,14 +8,12 @@ $message = "";
 if(isset($_POST['register'])){
     $un   = $_POST['username']; 
     $pw   = password_hash($_POST['password'], PASSWORD_DEFAULT);
-    $age  = $_POST['age']; 
     $sec  = $_POST['section'];
     $role = 'student'; 
     $status = 'Pending'; 
 
-    $stmt = $conn->prepare("INSERT INTO login(un, pw, age, sec, role, status) VALUES (?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("ssisss", $un, $pw, $age, $sec, $role, $status);
-    
+    $stmt = $conn->prepare("INSERT INTO login(un, pw, sec, role, status) VALUES (?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssss", $un, $pw, $sec, $role, $status);
     if($stmt->execute()){
         $message = "<div class='alert success'>Account created! Please wait for admin approval before logging in.</div>";
     } else {
@@ -193,9 +191,7 @@ include "header.php";
         .toggle-link span { color: var(--secondary); font-weight: 800; text-decoration: underline; }
         .hidden { display: none; }
 
-        /* =========================================
-   📱 RESPONSIVE MOBILE FIXES
-   ========================================= */
+   
 @media screen and (max-width: 768px) {
     /* 1. Stack the dashboard vertically instead of side-by-side */
     .dashboard-container {
@@ -285,7 +281,6 @@ include "header.php";
         <form method="POST">
             <input type="text" name="username" placeholder="Pick a Username" required>
             <input type="password" name="password" placeholder="Create Password" required>
-            <input type="number" name="age" placeholder="How old are you?" required>
             <input type="text" name="section" placeholder="Your Section (e.g. 10-A)" required>
             <button type="submit" name="register">Create Account</button>
         </form>
