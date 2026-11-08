@@ -2,11 +2,22 @@
 session_start();
 include "db.php";
 
+// Admin Analytics Data
+$total_students_query = $conn->query("SELECT COUNT(*) as count FROM login WHERE role = 'student'");
+$total_students = $total_students_query->fetch_assoc()['count'];
+
+$total_quizzes_query = $conn->query("SELECT COUNT(*) as count FROM quiz_categories");
+$total_quizzes = $total_quizzes_query->fetch_assoc()['count'];
+
+$total_questions_query = $conn->query("SELECT COUNT(*) as count FROM questions");
+$total_questions = $total_questions_query->fetch_assoc()['count'];
+
 // Admin Access Control
 if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
     header("Location: register.php"); 
     exit();
 }
+
 
 $admin_username = $_SESSION['user'];
 $message = "";
@@ -266,6 +277,59 @@ include "header.php";
         .alert { padding: 12px; border-radius: 8px; margin-bottom: 1.5rem; font-weight: 600; }
         .success { background: #ebfbee; color: #2b8a3e; }
         .error { background: #fff5f5; color: #c92a2a; }
+    
+    //* Refined mobile layout spacing */
+    @media screen and (max-width: 768px) {
+        /* 1. Fix the main wrapper (Admin uses .layout) */
+        .layout {
+            flex-direction: column;
+            margin: 15px;
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* 2. Convert sidebar to a top-header */
+        .sidebar {
+            width: 100%;
+            box-sizing: border-box;
+            border-right: none;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            padding: 1.5rem 1rem;
+        }
+
+        /* 3. Stack the stats grids on phones */
+        .admin-stats-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        /* 4. Fix the 2-column Form Grid (Create Set & Add Question) */
+        div[style*="grid-template-columns: 1fr 1fr;"] {
+            grid-template-columns: 1fr !important;
+        }
+
+        /* 5. Enable swipeable scrolling directly on tables */
+        table {
+            display: block;
+            overflow-x: auto;
+            white-space: nowrap; /* Prevents text from squishing */
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+        }
+
+    
+        .main-content {
+            padding: 1rem;
+            max-height: none; 
+            overflow: visible;
+        }
+        
+        li[style*="display: flex;"] {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 10px;
+        }
+    }
+
     </style>
 </head>
 <body>
@@ -284,8 +348,31 @@ include "header.php";
         <a href="logout.php" style="text-decoration:none; margin-top: auto; width:100%;"><button class="nav-btn logout">Logout</button></a>
     </div>
 
-    <div class="main-content">
+   <div class="main-content">
         <?php if($message) echo $message; ?>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
+            <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-top: 5px solid var(--secondary);">
+                <div style="color: #888; font-size: 0.9rem; font-weight: 800; text-transform: uppercase;">Total Students</div>
+                <div style="font-size: 2.5rem; font-weight: 800; color: var(--text-dark); margin-top: 10px;">
+                    <?php echo $total_students; ?>
+                </div>
+            </div>
+            
+            <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-top: 5px solid #20c997;">
+                <div style="color: #888; font-size: 0.9rem; font-weight: 800; text-transform: uppercase;">Total Quizzes</div>
+                <div style="font-size: 2.5rem; font-weight: 800; color: var(--text-dark); margin-top: 10px;">
+                    <?php echo $total_quizzes; ?>
+                </div>
+            </div>
+            
+            <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-top: 5px solid #ff6b6b;">
+                <div style="color: #888; font-size: 0.9rem; font-weight: 800; text-transform: uppercase;">Total Questions</div>
+                <div style="font-size: 2.5rem; font-weight: 800; color: var(--text-dark); margin-top: 10px;">
+                    <?php echo $total_questions; ?>
+                </div>
+            </div>
+        </div>
 
         <div class="admin-stats-grid">
             <div class="admin-stat-card"><div class="admin-stat-num"><?php echo $activeCount; ?></div><div class="admin-stat-label">Active</div></div>
@@ -415,13 +502,12 @@ include "header.php";
                                 <?php echo $cat['status']; ?>
                             </span>
                         </div>
-                        <div style="display: flex; gap: 10px;">
-    <!-- Manage Questions Button -->
+
     <a href="manage_questions.php?category_id=<?php echo $cat['id']; ?>" class="btn-view" style="background: var(--secondary); color: white; text-decoration: none; display: flex; align-items: center;">
         📝 Manage
     </a>
 
-    <!-- Toggle Status Button -->
+
     <form method="POST" style="margin:0;" onsubmit="return confirm('Are you sure you want to change the status of this quiz?');">
         <input type="hidden" name="active_tab" value="quizzes">
         <input type="hidden" name="category_id" value="<?php echo $cat['id']; ?>">
@@ -431,7 +517,7 @@ include "header.php";
         </button>
     </form>
     
-    <!-- Delete Quiz Button -->
+
     <form method="POST" style="margin:0;" onsubmit="return confirm('⚠️ Are you absolutely sure? This will permanently delete the quiz, all its questions, and all student scores.');">
         <input type="hidden" name="active_tab" value="quizzes">
         <input type="hidden" name="category_id" value="<?php echo $cat['id']; ?>">
