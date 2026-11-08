@@ -2,20 +2,22 @@
 session_start();
 include "db.php";
 
+// Admin Analytics Data
+$total_students_query = $conn->query("SELECT COUNT(*) as count FROM login WHERE role = 'student'");
+$total_students = $total_students_query->fetch_assoc()['count'];
+
+$total_quizzes_query = $conn->query("SELECT COUNT(*) as count FROM quiz_categories");
+$total_quizzes = $total_quizzes_query->fetch_assoc()['count'];
+
+$total_questions_query = $conn->query("SELECT COUNT(*) as count FROM questions");
+$total_questions = $total_questions_query->fetch_assoc()['count'];
+
 // Admin Access Control
 if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
     header("Location: register.php"); 
     exit();
 }
 
-// Count Pending Approvals for the Notification Badge
-$pending_query = $conn->query("SELECT COUNT(*) as pending_count FROM login WHERE status = 'Pending' AND role = 'student'");
-$pending_data = $pending_query->fetch_assoc();
-$pending_count = $pending_data['pending_count'];
-
-$page_title = "Admin Dashboard | EDUQuiz";
-include "header.php"; 
-?>
 
 $admin_username = $_SESSION['user'];
 $message = "";
@@ -276,18 +278,6 @@ include "header.php";
         .success { background: #ebfbee; color: #2b8a3e; }
         .error { background: #fff5f5; color: #c92a2a; }
     </style>
-    <!-- Pending Approvals Alert Card -->
-<?php if ($pending_count > 0): ?>
-    <div style="background: #fff0f0; border-left: 5px solid #ff6b6b; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-        <div>
-            <h3 style="margin: 0; color: #c92a2a;">🚨 Action Required</h3>
-            <p style="margin: 5px 0 0 0; font-size: 0.95rem; color: #555;">There are students waiting for account approval.</p>
-        </div>
-        <span style="background: #ff6b6b; color: white; padding: 8px 15px; border-radius: 20px; font-weight: 800; font-size: 1rem;">
-            <?php echo $pending_count; ?> Pending
-        </span>
-    </div>
-<?php endif; ?>
 </head>
 <body>
 
@@ -305,8 +295,32 @@ include "header.php";
         <a href="logout.php" style="text-decoration:none; margin-top: auto; width:100%;"><button class="nav-btn logout">Logout</button></a>
     </div>
 
-    <div class="main-content">
+   <div class="main-content">
         <?php if($message) echo $message; ?>
+
+        <!-- Admin Analytics Panel -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
+            <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-top: 5px solid var(--secondary);">
+                <div style="color: #888; font-size: 0.9rem; font-weight: 800; text-transform: uppercase;">Total Students</div>
+                <div style="font-size: 2.5rem; font-weight: 800; color: var(--text-dark); margin-top: 10px;">
+                    <?php echo $total_students; ?>
+                </div>
+            </div>
+            
+            <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-top: 5px solid #20c997;">
+                <div style="color: #888; font-size: 0.9rem; font-weight: 800; text-transform: uppercase;">Total Quizzes</div>
+                <div style="font-size: 2.5rem; font-weight: 800; color: var(--text-dark); margin-top: 10px;">
+                    <?php echo $total_quizzes; ?>
+                </div>
+            </div>
+            
+            <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-top: 5px solid #ff6b6b;">
+                <div style="color: #888; font-size: 0.9rem; font-weight: 800; text-transform: uppercase;">Total Questions</div>
+                <div style="font-size: 2.5rem; font-weight: 800; color: var(--text-dark); margin-top: 10px;">
+                    <?php echo $total_questions; ?>
+                </div>
+            </div>
+        </div>
 
         <div class="admin-stats-grid">
             <div class="admin-stat-card"><div class="admin-stat-num"><?php echo $activeCount; ?></div><div class="admin-stat-label">Active</div></div>
