@@ -73,6 +73,65 @@ include "header.php";
         .btn-delete:hover { background: #ffc9c9; }
         .alert { padding: 12px; border-radius: 8px; margin-bottom: 1.5rem; font-weight: 600; }
         .success { background: #ebfbee; color: #2b8a3e; }
+    
+    /* =========================================
+   📱 RESPONSIVE MOBILE FIXES
+   ========================================= */
+@media screen and (max-width: 768px) {
+    /* 1. Stack the dashboard vertically instead of side-by-side */
+    .dashboard-container {
+        flex-direction: column;
+        margin: 15px; /* Reduce large outer margins */
+        max-width: 100%;
+        border-radius: 16px;
+    }
+
+    /* 2. Convert sidebar to a top-header */
+    .sidebar {
+        width: 100%;
+        box-sizing: border-box;
+        border-right: none;
+        border-bottom: 1px solid var(--border-glass);
+        padding: 1.5rem 1rem;
+    }
+
+    /* 3. Reduce padding in the main content area */
+    .main-content {
+        padding: 1.5rem 1rem;
+        box-sizing: border-box;
+    }
+
+    /* 4. Make quiz cards fit side-by-side on standard phones */
+    .quiz-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 1rem;
+    }
+
+    /* 5. Enable horizontal scrolling for the table so it doesn't break the screen width */
+    .table-container {
+        padding: 1rem;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    }
+
+    .modern-table {
+        min-width: 550px; /* Forces the table to scroll rather than squishing text */
+    }
+
+    /* 6. Ensure inputs and forms don't overflow the screen */
+    .form-group input, 
+    .btn-submit {
+        box-sizing: border-box;
+        width: 100%;
+    }
+
+    /* 7. Center align navigation buttons for better mobile tapping */
+    .nav-btn {
+        text-align: center;
+        padding: 15px;
+    }
+}
+    
     </style>
 </head>
 <body>
