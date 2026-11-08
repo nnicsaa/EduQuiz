@@ -353,7 +353,6 @@ include "header.php";
    <div class="main-content">
         <?php if($message) echo $message; ?>
 
-        <!-- Admin Analytics Panel -->
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
             <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-top: 5px solid var(--secondary);">
                 <div style="color: #888; font-size: 0.9rem; font-weight: 800; text-transform: uppercase;">Total Students</div>
@@ -505,13 +504,12 @@ include "header.php";
                                 <?php echo $cat['status']; ?>
                             </span>
                         </div>
-                        <div style="display: flex; gap: 10px;">
-    <!-- Manage Questions Button -->
+
     <a href="manage_questions.php?category_id=<?php echo $cat['id']; ?>" class="btn-view" style="background: var(--secondary); color: white; text-decoration: none; display: flex; align-items: center;">
         📝 Manage
     </a>
 
-    <!-- Toggle Status Button -->
+
     <form method="POST" style="margin:0;" onsubmit="return confirm('Are you sure you want to change the status of this quiz?');">
         <input type="hidden" name="active_tab" value="quizzes">
         <input type="hidden" name="category_id" value="<?php echo $cat['id']; ?>">
@@ -521,7 +519,7 @@ include "header.php";
         </button>
     </form>
     
-    <!-- Delete Quiz Button -->
+
     <form method="POST" style="margin:0;" onsubmit="return confirm('⚠️ Are you absolutely sure? This will permanently delete the quiz, all its questions, and all student scores.');">
         <input type="hidden" name="active_tab" value="quizzes">
         <input type="hidden" name="category_id" value="<?php echo $cat['id']; ?>">
