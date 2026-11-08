@@ -372,7 +372,7 @@ include "header.php";
 
         <div class="admin-stats-grid">
             <div class="admin-stat-card"><div class="admin-stat-num"><?php echo $activeCount; ?></div><div class="admin-stat-label">Active</div></div>
-            <div class="admin-stat-card" style="border: 2px solid #fcc419;"><div class="admin-stat-num" style="color: #f59f00;"><?php echo $pendingCount; ?></div><div class="admin-stat-label">Pending</div></div>
+            <div class="admin-stat-card" style="border: 2px solid #fcc419;"><div class="admin-stat-num" id="live-pending-count" style="color: #f59f00;"><?php echo $pendingCount; ?></div><div class="admin-stat-label">Pending</div></div>
             <div class="admin-stat-card"><div class="admin-stat-num"><?php echo $deactivatedCount; ?></div><div class="admin-stat-label">Deactivated</div></div>
         </div>
 
@@ -606,5 +606,29 @@ window.onload = function() {
     <?php elseif ($current_tab === 'edit-profile'): ?> switchTab('edit-profile', document.getElementById('btn-edit-profile'));
     <?php else: ?> switchTab('students', document.getElementById('btn-students'));
     <?php endif; ?>
+
+    // Function to check for new registrations in the background
+function fetchPendingCount() {
+    fetch('check_pending.php')
+        .then(response => response.json())
+        .then(data => {
+            const counterElement = document.getElementById('live-pending-count');
+            
+            // If the number of pending students has increased, update the screen
+            if (counterElement && data.count !== undefined) {
+                if (parseInt(counterElement.innerText) !== data.count) {
+                    counterElement.innerText = data.count;
+                    
+                    // Optional: Add a little CSS animation or alert to draw attention
+                    counterElement.style.transform = "scale(1.2)";
+                    setTimeout(() => counterElement.style.transform = "scale(1)", 300);
+                }
+            }
+        })
+        .catch(error => console.error('Error fetching pending count:', error));
+}
+
+// Run the check every 5 seconds (5000 milliseconds)
+setInterval(fetchPendingCount, 5000);
 </script>
 <?php include "footer.php"; ?>
