@@ -377,6 +377,14 @@ include "header.php";
         </div>
 
         <div id="students" class="section">
+            <div id="live-pending-table">
+        <?php if($pending_students_query->num_rows > 0): ?>
+            <h2 style="color: #f59f00;">Pending Approvals</h2>
+            <table>
+                <!-- Your existing table code is here -->
+            </table>
+        <?php endif; ?>
+    </div>
             <?php if($pending_students_query->num_rows > 0): ?>
                 <h2 style="color: #f59f00;">Pending Approvals</h2>
                 <table>
@@ -608,27 +616,34 @@ window.onload = function() {
     <?php endif; ?>
 
     // Function to check for new registrations in the background
+// Function to check for new registrations in the background
 function fetchPendingCount() {
     fetch('check_pending.php')
         .then(response => response.json())
         .then(data => {
             const counterElement = document.getElementById('live-pending-count');
+            const tableContainer = document.getElementById('live-pending-table');
             
-            // If the number of pending students has increased, update the screen
             if (counterElement && data.count !== undefined) {
+                // If the database number doesn't match what is on the screen...
                 if (parseInt(counterElement.innerText) !== data.count) {
-                    counterElement.innerText = data.count;
                     
-                    // Optional: Add a little CSS animation or alert to draw attention
+                    // 1. Update the number counter
+                    counterElement.innerText = data.count;
                     counterElement.style.transform = "scale(1.2)";
                     setTimeout(() => counterElement.style.transform = "scale(1)", 300);
+                    
+                    // 2. Update the actual table section with the new data
+                    if (tableContainer) {
+                        tableContainer.innerHTML = data.html;
+                    }
                 }
             }
         })
         .catch(error => console.error('Error fetching pending count:', error));
 }
 
-// Run the check every 5 seconds (5000 milliseconds)
+// Run the check every 5 seconds
 setInterval(fetchPendingCount, 5000);
 </script>
 <?php include "footer.php"; ?>
