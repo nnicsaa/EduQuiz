@@ -292,7 +292,7 @@ include "header.php";
                 <option value="admin">Admin</option>
             </select>
             <input type="text" name="username" placeholder="Enter Username" required>
-            <input type="password" name="password" placeholder="Enter Password" required>
+           <input type="password" id="login-pw" name="password" placeholder="Enter Password" required>
             <div class="show-pw-container">
                 <input type="checkbox" id="show-login" onclick="togglePassword('login-pw')">
                 <label for="show-login">Show Password</label>
@@ -306,7 +306,7 @@ include "header.php";
         <h2>Join the community!</h2>
         <form method="POST">
             <input type="text" name="username" placeholder="Pick a Username" required>
-            <input type="password" name="password" placeholder="Create Password" required>
+           <input type="password" id="reg-pw" name="password" placeholder="Create Password" required>
             <div class="show-pw-container">
                 <input type="checkbox" id="show-reg" onclick="togglePassword('reg-pw')">
                 <label for="show-reg">Show Password</label>
