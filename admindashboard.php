@@ -278,11 +278,8 @@ include "header.php";
         .success { background: #ebfbee; color: #2b8a3e; }
         .error { background: #fff5f5; color: #c92a2a; }
     
-    /* =========================================
-       📱 RESPONSIVE MOBILE FIXES FOR ADMIN
-       ========================================= */
-    @media screen and (max-width: 768px) {
-        /* 1. Fix the main wrapper (Admin uses .layout) */
+          @media screen and (max-width: 768px) {
+        
         .layout {
             flex-direction: column;
             margin: 15px;
@@ -290,8 +287,7 @@ include "header.php";
             height: auto;
         }
 
-        /* 2. Convert sidebar to a top-header */
-        .sidebar {
+             .sidebar {
             width: 100%;
             box-sizing: border-box;
             border-right: none;
@@ -299,14 +295,12 @@ include "header.php";
             padding: 1.5rem 1rem;
         }
 
-        /* 3. Stack the stats grids on phones */
-        .admin-stats-grid {
+               .admin-stats-grid {
             grid-template-columns: 1fr;
             gap: 1rem;
         }
 
-        /* 4. Fix the 2-column Form Grid (Create Set & Add Question) */
-        div[style*="grid-template-columns: 1fr 1fr;"] {
+              div[style*="grid-template-columns: 1fr 1fr;"] {
             grid-template-columns: 1fr !important;
         }
 
@@ -505,29 +499,29 @@ include "header.php";
                             </span>
                         </div>
 
-    <a href="manage_questions.php?category_id=<?php echo $cat['id']; ?>" class="btn-view" style="background: var(--secondary); color: white; text-decoration: none; display: flex; align-items: center;">
-        📝 Manage
-    </a>
+                        <!-- 1. ADDED OPENING DIV HERE to group the action buttons -->
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <a href="manage_questions.php?category_id=<?php echo $cat['id']; ?>" class="btn-view" style="background: var(--secondary); color: white; text-decoration: none; display: flex; align-items: center;">
+                                📝 Manage
+                            </a>
 
-
-    <form method="POST" style="margin:0;" onsubmit="return confirm('Are you sure you want to change the status of this quiz?');">
-        <input type="hidden" name="active_tab" value="quizzes">
-        <input type="hidden" name="category_id" value="<?php echo $cat['id']; ?>">
-        <input type="hidden" name="current_status" value="<?php echo $cat['status']; ?>">
-        <button type="submit" name="toggle_quiz_status" class="btn-view" style="background: <?php echo $cat['status'] == 'Open' ? '#f59f00' : '#20c997'; ?>; color: white; border: none; cursor: pointer;">
-            <?php echo $cat['status'] == 'Open' ? '🔒 Close' : '🔓 Open'; ?>
-        </button>
-    </form>
-    
-
-    <form method="POST" style="margin:0;" onsubmit="return confirm('⚠️ Are you absolutely sure? This will permanently delete the quiz, all its questions, and all student scores.');">
-        <input type="hidden" name="active_tab" value="quizzes">
-        <input type="hidden" name="category_id" value="<?php echo $cat['id']; ?>">
-        <button type="submit" name="delete_quiz" class="btn-view" style="background: #c92a2a; color: white; border: none; cursor: pointer;">
-            🗑️ Delete
-        </button>
-    </form>
-</div>
+                            <form method="POST" style="margin:0;" onsubmit="return confirm('Are you sure you want to change the status of this quiz?');">
+                                <input type="hidden" name="active_tab" value="quizzes">
+                                <input type="hidden" name="category_id" value="<?php echo $cat['id']; ?>">
+                                <input type="hidden" name="current_status" value="<?php echo $cat['status']; ?>">
+                                <button type="submit" name="toggle_quiz_status" class="btn-view" style="background: <?php echo $cat['status'] == 'Open' ? '#f59f00' : '#20c997'; ?>; color: white; border: none; cursor: pointer;">
+                                    <?php echo $cat['status'] == 'Open' ? '🔒 Close' : '🔓 Open'; ?>
+                                </button>
+                            </form>
+                            
+                            <form method="POST" style="margin:0;" onsubmit="return confirm('⚠️ Are you absolutely sure? This will permanently delete the quiz, all its questions, and all student scores.');">
+                                <input type="hidden" name="active_tab" value="quizzes">
+                                <input type="hidden" name="category_id" value="<?php echo $cat['id']; ?>">
+                                <button type="submit" name="delete_quiz" class="btn-view" style="background: #c92a2a; color: white; border: none; cursor: pointer;">
+                                    🗑️ Delete
+                                </button>
+                            </form>
+                        </div> <!-- 2. This closing tag now correctly closes the button group instead of breaking the entire section -->
                     </li>
                 <?php endwhile; ?>
             </ul>
