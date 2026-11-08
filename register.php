@@ -163,6 +163,28 @@ include "header.php";
             transition: transform 0.3s ease;
         }
 
+        .show-pw-container {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-top: -5px;
+            margin-bottom: 10px;
+            padding-left: 5px;
+        }
+        
+        .show-pw-container input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+            margin-right: 8px;
+            cursor: pointer;
+        }
+        
+        .show-pw-container label {
+            font-size: 0.85rem;
+            color: #636e72;
+            cursor: pointer;
+        }
+
         .auth-container:hover { transform: translateY(-4px); }
 
         .logo { font-weight: 800; font-size: 2.2rem; letter-spacing: -1px; margin-bottom: 1.5rem; background: linear-gradient(to right, var(--accent), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -271,6 +293,10 @@ include "header.php";
             </select>
             <input type="text" name="username" placeholder="Enter Username" required>
             <input type="password" name="password" placeholder="Enter Password" required>
+            <div class="show-pw-container">
+                <input type="checkbox" id="show-login" onclick="togglePassword('login-pw')">
+                <label for="show-login">Show Password</label>
+            </div>
             <button type="submit" name="login">Let's Start ➔</button>
         </form>
         <div class="toggle-link" onclick="toggleForm()">New student? <span>Sign up here</span></div>
@@ -281,6 +307,10 @@ include "header.php";
         <form method="POST">
             <input type="text" name="username" placeholder="Pick a Username" required>
             <input type="password" name="password" placeholder="Create Password" required>
+            <div class="show-pw-container">
+                <input type="checkbox" id="show-reg" onclick="togglePassword('reg-pw')">
+                <label for="show-reg">Show Password</label>
+            </div>
             <input type="text" name="section" placeholder="Your Section (e.g. 10-A)" required>
             <button type="submit" name="register">Create Account</button>
         </form>
@@ -292,6 +322,16 @@ include "header.php";
     function toggleForm() {
         document.getElementById('login-form').classList.toggle('hidden');
         document.getElementById('register-form').classList.toggle('hidden');
+    }
+
+    // ADD THIS NEW FUNCTION
+    function togglePassword(inputId) {
+        var pwInput = document.getElementById(inputId);
+        if (pwInput.type === "password") {
+            pwInput.type = "text";
+        } else {
+            pwInput.type = "password";
+        }
     }
 </script>
 
