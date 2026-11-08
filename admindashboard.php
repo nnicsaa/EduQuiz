@@ -376,42 +376,38 @@ include "header.php";
             <div class="admin-stat-card"><div class="admin-stat-num"><?php echo $deactivatedCount; ?></div><div class="admin-stat-label">Deactivated</div></div>
         </div>
 
-        <div id="students" class="section">
+<div id="students" class="section">
             <div id="live-pending-table">
-        <?php if($pending_students_query->num_rows > 0): ?>
-            <h2 style="color: #f59f00;">Pending Approvals</h2>
-            <table>
-                <!-- Your existing table code is here -->
-            </table>
-        <?php endif; ?>
-    </div>
-            <?php if($pending_students_query->num_rows > 0): ?>
-                <h2 style="color: #f59f00;">Pending Approvals</h2>
-                <table>
-                    <thead><tr><th>User</th><th>Section</th><th>Action</th></tr></thead>
-                    <tbody>
-                        <?php while($row = $pending_students_query->fetch_assoc()): ?>
-                            <tr>
-                                <td><strong><?php echo $row['un']; ?></strong></td>
-                                <td><?php echo $row['sec']; ?></td>
-                                <td>
-    <div style="display: flex; gap: 10px;">
-        <form method="POST" style="margin:0;">
-            <input type='hidden' name='user_id' value='<?php echo $row['id']; ?>'>
-            <button type='submit' name='approve_account' class='btn-submit' style="padding: 5px 10px; background: #2b8a3e;">Approve</button>
-        </form>
-        
-        <form method="POST" style="margin:0;" onsubmit="return confirm('Are you sure you want to reject and permanently delete this student account?');">
-            <input type='hidden' name='user_id' value='<?php echo $row['id']; ?>'>
-            <button type='submit' name='reject_account' class='btn-submit' style="padding: 5px 10px; background: #c92a2a;">Reject</button>
-        </form>
-    </div>
-</td>
-                            </tr>
-                        <?php endwhile; ?>
-                    </tbody>
-                </table>
-            <?php endif; ?>
+                <?php if($pending_students_query->num_rows > 0): ?>
+                    <h2 style="color: #f59f00;">Pending Approvals</h2>
+                    <table>
+                        <thead><tr><th>User</th><th>Section</th><th>Action</th></tr></thead>
+                        <tbody>
+                            <?php while($row = $pending_students_query->fetch_assoc()): ?>
+                                <tr>
+                                    <td><strong><?php echo $row['un']; ?></strong></td>
+                                    <td><?php echo $row['sec']; ?></td>
+                                    <td>
+        <div style="display: flex; gap: 10px;">
+            <form method="POST" style="margin:0;">
+                <input type='hidden' name='user_id' value='<?php echo $row['id']; ?>'>
+                <button type='submit' name='approve_account' class='btn-submit' style="padding: 5px 10px; background: #2b8a3e;">Approve</button>
+            </form>
+            
+            <form method="POST" style="margin:0;" onsubmit="return confirm('Are you sure you want to reject and permanently delete this student account?');">
+                <input type='hidden' name='user_id' value='<?php echo $row['id']; ?>'>
+                <button type='submit' name='reject_account' class='btn-submit' style="padding: 5px 10px; background: #c92a2a;">Reject</button>
+            </form>
+        </div>
+    </td>
+                                </tr>
+                            <?php endwhile; ?>
+                        </tbody>
+                    </table>
+                <?php endif; ?>
+            </div>
+
+            <h2>Registered Students</h2>
 
             <h2>Registered Students</h2>
             <table>
