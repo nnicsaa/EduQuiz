@@ -4,7 +4,7 @@ include "db.php";
 
 $message = "";
 
-//registration logic
+// Registration logic
 if(isset($_POST['register'])){
     $un   = $_POST['username']; 
     $pw   = password_hash($_POST['password'], PASSWORD_DEFAULT);
@@ -21,7 +21,29 @@ if(isset($_POST['register'])){
     }
 }
 
-//login logic
+// Forgot Password Logic
+if(isset($_POST['forgot_password'])){
+    $un = $_POST['username'];
+    $sec = $_POST['section'];
+    $new_pw = password_hash($_POST['new_password'], PASSWORD_DEFAULT);
+
+    // Verify if user exists AND section matches (acts as a security check)
+    $stmt = $conn->prepare("SELECT pw FROM login WHERE un = ? AND sec = ? AND role = 'student'");
+    $stmt->bind_param("ss", $un, $sec);
+    $stmt->execute();
+    
+    if($stmt->get_result()->num_rows > 0){
+        // Verification passed, update the password
+        $update = $conn->prepare("UPDATE login SET pw = ? WHERE un = ? AND role = 'student'");
+        $update->bind_param("ss", $new_pw, $un);
+        $update->execute();
+        $message = "<div class='alert success'>Password reset successfully! You can now log in.</div>";
+    } else {
+        $message = "<div class='alert error'>Incorrect Username or Section. (Note: Only student accounts can be reset here).</div>";
+    }
+}
+
+// Login logic
 if(isset($_POST['login'])){
     $un   = $_POST['username'];
     $pw   = $_POST['password'];
@@ -54,10 +76,8 @@ if(isset($_POST['login'])){
                 $newStreak = $streakData['current_streak'];
 
                 if ($streakData['last_login_date'] == $yesterday) {
-                    //streak update
                     $newStreak++;
                 } elseif ($streakData['last_login_date'] != $today) {
-                    //lost streak
                     $newStreak = 1;
                 }
             
@@ -117,7 +137,6 @@ include "header.php";
             overflow: hidden; 
             background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
         }
-
 
         .bg-shapes { 
             position: absolute;
@@ -211,62 +230,19 @@ include "header.php";
         .toggle-link { margin-top: 2rem; font-size: 0.95rem; color: #495057; cursor: pointer; transition: color 0.2s;}
         .toggle-link:hover { color: var(--text-dark); }
         .toggle-link span { color: var(--secondary); font-weight: 800; text-decoration: underline; }
+        
+        .forgot-link { text-align: right; margin-top: -5px; font-size: 0.85rem; color: var(--secondary); cursor: pointer; text-decoration: underline; margin-bottom: 10px; }
         .hidden { display: none; }
 
-   
 @media screen and (max-width: 768px) {
-    /* 1. Stack the dashboard vertically instead of side-by-side */
-    .dashboard-container {
-        flex-direction: column;
-        margin: 15px; /* Reduce large outer margins */
-        max-width: 100%;
-        border-radius: 16px;
-    }
-
-    /* 2. Convert sidebar to a top-header */
-    .sidebar {
-        width: 100%;
-        box-sizing: border-box;
-        border-right: none;
-        border-bottom: 1px solid var(--border-glass);
-        padding: 1.5rem 1rem;
-    }
-
-    /* 3. Reduce padding in the main content area */
-    .main-content {
-        padding: 1.5rem 1rem;
-        box-sizing: border-box;
-    }
-
-    /* 4. Make quiz cards fit side-by-side on standard phones */
-    .quiz-grid {
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-        gap: 1rem;
-    }
-
-    /* 5. Enable horizontal scrolling for the table so it doesn't break the screen width */
-    .table-container {
-        padding: 1rem;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-    }
-
-    .modern-table {
-        min-width: 550px; /* Forces the table to scroll rather than squishing text */
-    }
-
-    /* 6. Ensure inputs and forms don't overflow the screen */
-    .form-group input, 
-    .btn-submit {
-        box-sizing: border-box;
-        width: 100%;
-    }
-
-    /* 7. Center align navigation buttons for better mobile tapping */
-    .nav-btn {
-        text-align: center;
-        padding: 15px;
-    }
+    .dashboard-container { flex-direction: column; margin: 15px; max-width: 100%; border-radius: 16px; }
+    .sidebar { width: 100%; box-sizing: border-box; border-right: none; border-bottom: 1px solid var(--border-glass); padding: 1.5rem 1rem; }
+    .main-content { padding: 1.5rem 1rem; box-sizing: border-box; }
+    .quiz-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 1rem; }
+    .table-container { padding: 1rem; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .modern-table { min-width: 550px; }
+    .form-group input, .btn-submit { box-sizing: border-box; width: 100%; }
+    .nav-btn { text-align: center; padding: 15px; }
 }
     </style>
 </head>
@@ -283,6 +259,7 @@ include "header.php";
 
     <?php if($message) echo $message; ?>
 
+    <!-- LOGIN FORM -->
     <div id="login-form">
         <h2>Ready for a quiz?</h2>
         <form method="POST">
@@ -292,21 +269,26 @@ include "header.php";
                 <option value="admin">Admin</option>
             </select>
             <input type="text" name="username" placeholder="Enter Username" required>
-           <input type="password" id="login-pw" name="password" placeholder="Enter Password" required>
+            <input type="password" id="login-pw" name="password" placeholder="Enter Password" required>
+            
             <div class="show-pw-container">
                 <input type="checkbox" id="show-login" onclick="togglePassword('login-pw')">
                 <label for="show-login">Show Password</label>
             </div>
+            
+            <div class="forgot-link" onclick="showForgot()">Forgot Password?</div>
+            
             <button type="submit" name="login">Let's Start ➔</button>
         </form>
-        <div class="toggle-link" onclick="toggleForm()">New student? <span>Sign up here</span></div>
+        <div class="toggle-link" onclick="showRegister()">New student? <span>Sign up here</span></div>
     </div>
 
+    <!-- REGISTER FORM -->
     <div id="register-form" class="hidden">
         <h2>Join the community!</h2>
         <form method="POST">
             <input type="text" name="username" placeholder="Pick a Username" required>
-           <input type="password" id="reg-pw" name="password" placeholder="Create Password" required>
+            <input type="password" id="reg-pw" name="password" placeholder="Create Password" required>
             <div class="show-pw-container">
                 <input type="checkbox" id="show-reg" onclick="togglePassword('reg-pw')">
                 <label for="show-reg">Show Password</label>
@@ -314,17 +296,47 @@ include "header.php";
             <input type="text" name="section" placeholder="Your Section (e.g. 10-A)" required>
             <button type="submit" name="register">Create Account</button>
         </form>
-        <div class="toggle-link" onclick="toggleForm()">Already joined? <span>Login instead</span></div>
+        <div class="toggle-link" onclick="showLogin()">Already joined? <span>Login instead</span></div>
     </div>
+
+    <!-- FORGOT PASSWORD FORM -->
+    <div id="forgot-form" class="hidden">
+        <h2>Reset Password</h2>
+        <p style="font-size: 0.85rem; color: #636e72; margin-bottom: 15px;">Verify your section to reset your password.</p>
+        <form method="POST">
+            <input type="text" name="username" placeholder="Enter Username" required>
+            <input type="text" name="section" placeholder="Enter Your Section (e.g. 10-A)" required>
+            <input type="password" id="forgot-pw" name="new_password" placeholder="Enter New Password" required>
+            <div class="show-pw-container">
+                <input type="checkbox" id="show-forgot" onclick="togglePassword('forgot-pw')">
+                <label for="show-forgot">Show Password</label>
+            </div>
+            <button type="submit" name="forgot_password">Reset Password</button>
+        </form>
+        <div class="toggle-link" onclick="showLogin()">Back to <span>Login</span></div>
+    </div>
+
 </div>
 
 <script>
-    function toggleForm() {
-        document.getElementById('login-form').classList.toggle('hidden');
-        document.getElementById('register-form').classList.toggle('hidden');
+    function showLogin() {
+        document.getElementById('login-form').classList.remove('hidden');
+        document.getElementById('register-form').classList.add('hidden');
+        document.getElementById('forgot-form').classList.add('hidden');
     }
 
-    // ADD THIS NEW FUNCTION
+    function showRegister() {
+        document.getElementById('login-form').classList.add('hidden');
+        document.getElementById('register-form').classList.remove('hidden');
+        document.getElementById('forgot-form').classList.add('hidden');
+    }
+
+    function showForgot() {
+        document.getElementById('login-form').classList.add('hidden');
+        document.getElementById('register-form').classList.add('hidden');
+        document.getElementById('forgot-form').classList.remove('hidden');
+    }
+
     function togglePassword(inputId) {
         var pwInput = document.getElementById(inputId);
         if (pwInput.type === "password") {
