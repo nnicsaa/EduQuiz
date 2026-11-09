@@ -6,11 +6,9 @@ if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
     exit();
 }
 
-// 1. Get the total count
 $pending_query = $conn->query("SELECT COUNT(*) as total FROM login WHERE role = 'student' AND status = 'Pending'");
 $pendingCount = $pending_query->fetch_assoc()['total'];
 
-// 2. Build the HTML for the table if there are pending students
 $html = "";
 if ($pendingCount > 0) {
     $html .= "<h2 style='color: #f59f00;'>Pending Approvals</h2>";
@@ -42,6 +40,5 @@ if ($pendingCount > 0) {
     $html .= "</tbody></table>";
 }
 
-// 3. Send both the count and the HTML back to the dashboard
 echo json_encode(['count' => $pendingCount, 'html' => $html]);
 ?>
